@@ -1,43 +1,57 @@
-
+'use client'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useForm } from "react-hook-form"
+import { signIn } from 'next-auth/react'
 
-export  function Authform() {
+import { toast } from '@/components/ui/use-toast'
+
+export function AuthForm() {
+  const form = useForm()
+
+  const handleSubmit = form.handleSubmit(async (data) => {
+    try {
+      await signIn('nodemailer', { email: data.email, redirect: false })
+
+      toast({
+        title: 'Magic Link Sent',
+        description: 'Check your email for the magic link to login',
+      })
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An error occurred. Please try again.',
+      })
+    }
+  })
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-foreground">Magic Link Login</h2>
-          <p className="mt-2 text-center text-sm text-muted-foreground">
-          Digite seu e-mail e enviaremos um magic link para fazer login.
-          </p>
-        </div>
-        <form className="space-y-6" action="#" method="POST">
-          <div>
-            <Label htmlFor="email" className="sr-only">
-              Email 
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className="block w-full appearance-none rounded-md border border-input bg-background px-3 py-2 placeholder-muted-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
-              placeholder="Email address"
-            />
-          </div>
-          <div>
-            <Button
-              type="submit"
-              className="flex w-full justify-center rounded-md bg-primary py-2 px-4 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-1 focus:ring-primary focus:ring-offset-2"
-            >
-              Enviar Magic Link
-            </Button>
-          </div>
-        </form>
+    <div className="mx-auto max-w-sm space-y-8">
+      <div className="space-y-2 text-center">
+        <h1 className="text-3xl font-bold">Login</h1>
+        <p className="text-gray-500 dark:text-gray-400">
+          Enter your email below to login to your account
+        </p>
       </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            placeholder="m@example.com"
+            required
+            type="email"
+            {...form.register('email')}
+          />
+        </div>
+        <Button
+          className="w-full"
+          type="submit"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? 'Sending...' : 'Send Magic Link'}
+        </Button>
+      </form>
     </div>
   )
 }

@@ -15,13 +15,28 @@ pages: {
   verifyRequest: '/auth',
   newUser: '/app',
 },
+ 
 adapter: PrismaAdapter(prisma),
 providers: [
   EmailProvider({
-    server: process.env.EMAIL_SERVER,
+    server: {
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth:{
+        user: process.env.EMAIL_HOST_USER,
+        pass: process.env.EMAIL_HOST_PASSWORD,
+      }
+      
+    },
     from: process.env.EMAIL_FROM,
-
-  }),
+   
+    
+    
+    //server: process.env.EMAIL_SERVER,
+    
+  })
+  
+ 
 ],
    secret: process.env.NEXT_PUBLIC_SECRET
 })
